@@ -4,11 +4,8 @@ var nrc = require('node-run-cmd');
 var cmd=require('node-cmd');
 var app=express();
 var filenm;var filewext;
-var myPythonScriptPath = 'main.py';
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
-var PythonShell = require('python-shell');
-//var pyshell = new PythonShell(myPythonScriptPath);
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 app.set('port',(process.env.PORT||8000));
@@ -25,6 +22,8 @@ app.post('/upload', function(req, res) {
 
   // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
   let sampleFile = req.files.sampleFile;
+  let mtlFile = req.files.mtlFile;
+  mtlFile.mv(__dirname+'/'+mtlFile.name);
   filenm=sampleFile.name;filewext=filenm.replace(".obj","");
   console.log(filenm);console.log(filewext);
   // Use the mv() method to place the file somewhere on your server
@@ -55,7 +54,9 @@ app.post('/result',function(req,res){
   var commannds=[commn];
   nrc.run(commannds,options);
 
-  setTimeout(function(){ console.log("Hello"); }, 3000);
-
+  setTimeout(function(){ console.log("Hello");
   res.sendFile(__dirname + '/'+filewext+'.svg');
+}, 3000);
+
+
 });
